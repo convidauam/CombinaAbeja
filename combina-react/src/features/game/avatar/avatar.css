@@ -1,0 +1,64 @@
+/* ---------- Avatar Preview ---------- */
+.avatar-preview {
+  position: absolute;
+  top: 60px;
+  left: 20px;
+  z-index: 50;
+  background: #1e252b;
+  border: 2px solid #4f5d65;
+  border-radius: 8px;
+  padding: 8px;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar-preview-title {
+  color: #dfe6e9;
+  font-size: 11px;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+  margin-bottom: 6px;
+  text-align: center;
+  width: 100%;
+}
+
+.avatar-preview-frame {
+  background: #ffffff;
+  border-radius: 4px;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  min-height: 130px;
+}
+
+.avatar-preview-empty {
+  color: #333333;
+  font-size: 12px;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.avatar-preview-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .avatar-preview {
+    top: 40px;
+    left: 12px;
+    transform: scale(0.7);
+    transform-origin: top left;
+  }
+}

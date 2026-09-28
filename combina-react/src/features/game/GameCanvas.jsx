@@ -2,14 +2,22 @@ import { useEffect, useRef, useState } from 'react';
 import { Application } from 'pixi.js';
 import { CombinaGenerator } from './engine/CombinaGenerator';
 
-export function GameCanvas({ config, onCombinationChange, onMessage, onReset }) {
+export function GameCanvas({
+  config,
+  onCombinationChange,
+  onMessage,
+  onReset,
+  onReady,
+  onAdjustRequest,
+  onExportRequest,
+}) {
   const containerRef = useRef(null);
   const appRef = useRef(null);
   const generatorRef = useRef(null);
   const [app, setApp] = useState(null);
   const [isReady, setIsReady] = useState(false);
 
-  // 1) Crear la app de PIXI UNA sola vez al montar
+  // 1) Crear la app de PIXI una sola vez al montar
   useEffect(() => {
     if (!containerRef.current) return;
 
@@ -53,7 +61,6 @@ export function GameCanvas({ config, onCombinationChange, onMessage, onReset }) 
       appRef.current = null;
       setApp(null);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // 2) Cuando la app esté lista y haya config, crear el generator y cargar la config
@@ -66,6 +73,8 @@ export function GameCanvas({ config, onCombinationChange, onMessage, onReset }) 
       onCombinationChange,
       onMessage,
       onReset,
+      onAdjustRequest,
+      onExportRequest,
     });
 
     generator.load(config).then((ok) => {
@@ -73,6 +82,7 @@ export function GameCanvas({ config, onCombinationChange, onMessage, onReset }) 
       if (ok) {
         generatorRef.current = generator;
         setIsReady(true);
+        if (onReady) onReady(generator);
       } else {
         console.error('No se pudo cargar la config en el generator');
       }
@@ -86,7 +96,6 @@ export function GameCanvas({ config, onCombinationChange, onMessage, onReset }) 
       }
       setIsReady(false);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [app, config]);
 
   // 3) Manejar resize
@@ -100,7 +109,6 @@ export function GameCanvas({ config, onCombinationChange, onMessage, onReset }) 
 
       if (generatorRef.current && generatorRef.current.ui) {
         generatorRef.current.ui.createUI();
-        generatorRef.current.updateResultDisplay();
       }
     };
 

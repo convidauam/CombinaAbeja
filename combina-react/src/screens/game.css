@@ -1,3 +1,15 @@
+/* ---------- Layout general ---------- */
+.game-root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 20px;
+}
+
+/* ---------- Canvas ---------- */
 .game-canvas-wrapper {
   position: relative;
   border-radius: 20px;
@@ -9,7 +21,7 @@
   display: block;
   border-radius: 20px;
   overflow: hidden;
-  line-height: 0; /* evita espacio fantasma debajo del canvas */
+  line-height: 0;
 }
 
 .game-canvas-container canvas {
@@ -18,7 +30,101 @@
   cursor: pointer;
 }
 
-  .game-toast {
+.game-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  color: #ffd93d;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 20px;
+  pointer-events: none;
+}
+
+/* ---------- Botones overlay ---------- */
+.game-controls {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 500;
+  pointer-events: none;
+  gap: 16px;
+}
+
+.game-controls > * {
+  pointer-events: auto;
+}
+
+.game-controls-right {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.game-btn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffffff;
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s, background 0.15s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.game-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.4);
+}
+
+.game-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.game-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.game-btn-success {
+  background: #2ed573;
+}
+.game-btn-success:hover:not(:disabled) {
+  background: #26b865;
+}
+
+.game-btn-warning {
+  background: #ffa502;
+}
+.game-btn-warning:hover:not(:disabled) {
+  background: #e69400;
+}
+
+.game-btn-purple {
+  background: #9c27b0;
+}
+.game-btn-purple:hover:not(:disabled) {
+  background: #7b1fa2;
+}
+
+.game-btn-danger {
+  background: #ff4757;
+}
+.game-btn-danger:hover:not(:disabled) {
+  background: #e63946;
+}
+
+/* ---------- Toast ---------- */
+.game-toast {
   position: fixed;
   bottom: 40px;
   left: 50%;
@@ -43,5 +149,78 @@
   to {
     opacity: 1;
     transform: translate(-50%, 0);
+  }
+}
+
+/* ---------- Link volver ---------- */
+.game-back-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  color: #ffd93d;
+  text-decoration: none;
+  font-weight: bold;
+  padding: 8px 16px;
+  border: 2px solid #ffd93d;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 100;
+  transition: background 0.2s;
+}
+
+.game-back-link:hover {
+  background: rgba(255, 217, 61, 0.15);
+}
+
+/* ---------- Estado vacío ---------- */
+.game-empty {
+  text-align: center;
+  color: #fff;
+  padding: 40px;
+}
+
+.game-empty h2 {
+  color: #ffd93d;
+  margin-bottom: 12px;
+}
+
+.game-empty p {
+  color: #cccccc;
+  margin-bottom: 24px;
+}
+
+.game-empty-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}
+
+.game-link {
+  color: #ffd93d;
+  text-decoration: none;
+  padding: 10px 20px;
+  border: 2px solid #ffd93d;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .game-controls {
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .game-controls-right {
+    justify-content: space-between;
+  }
+
+  .game-btn {
+    flex: 1;
+    padding: 10px 12px;
+    font-size: 12px;
   }
 }

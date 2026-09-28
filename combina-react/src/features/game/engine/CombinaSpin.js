@@ -14,7 +14,7 @@ export class CombinaSpin {
         };
         this.winEffects = [];
         this.sparkles = [];
-        
+
         this.generator.slots.forEach((_, idx) => {
             this.spinConfig.spinDelay[idx] = idx * 180;
         });
@@ -22,98 +22,69 @@ export class CombinaSpin {
 
     async spin() {
         if (this.generator.isSpinning) return;
-        
+
         this.generator.isSpinning = true;
         this.generator.spinStartTime = Date.now();
-        
+
         this.showSpinningMessage();
         this.createWinEffects();
         this.createSparkles();
-        
+
         this.generator.slots.forEach((slot, index) => {
             if (slot.parts.length === 0) return;
-            
+
             slot.spinning = true;
             slot.finalIndex = Math.floor(Math.random() * slot.parts.length);
             slot.spinSpeed = this.spinConfig.maxSpeed;
             slot.targetPosition = slot.finalIndex * this.spinConfig.spacing;
             slot.startPosition = slot.position || 0;
         });
-        
+
         if (this.generator.ui) {
             this.generator.ui.updateCylinderLights(true);
         }
-        
+
         await this.animateSpin();
-        
+
         this.generator.isSpinning = false;
         this.updateCurrentCombination();
-        this.generator.updateResultDisplay();
+
+        // Notificar a React con combinación + config enriquecido
+        if (this.generator.callbacks && this.generator.callbacks.onCombinationChange) {
+            this.generator.callbacks.onCombinationChange(
+                [...this.generator.currentCombination],
+                this.generator.config
+            );
+        }
+
         this.showWinEffects();
         this.triggerWinCelebration();
     }
 
     showSpinningMessage() {
-        if (this.generator.resultSprite) {
-            this.generator.resultSprite.destroy();
-        }
-        
-        if (this.generator.resultContainer.children) {
-            for (let i = this.generator.resultContainer.children.length - 1; i >= 3; i--) {
-                const child = this.generator.resultContainer.children[i];
-                if (child !== this.generator.resultContainer.children[0] && 
-                    child !== this.generator.resultContainer.children[1] && 
-                    child !== this.generator.resultContainer.children[2]) {
-                    child.destroy();
-                }
-            }
-        }
-        
-        const container = new PIXI.Container();
-        const spinningMsg = new PIXI.Text('GIRANDO...', {
-            fontFamily: 'Arial', fontSize: 16, fill: 0xffd93d, fontWeight: 'bold'
-        });
-        spinningMsg.x = (this.generator.resultContainer.width - spinningMsg.width) / 2;
-        spinningMsg.y = (this.generator.resultContainer.height - spinningMsg.height) / 2 - 10;
-        container.addChild(spinningMsg);
-        
-        const barBg = new PIXI.Graphics();
-        barBg.beginFill(0x22222b);
-        barBg.drawRoundedRect(20, 55, 160, 5, 2);
-        barBg.endFill();
-        container.addChild(barBg);
-        
-        const bar = new PIXI.Graphics();
-        bar.beginFill(0xffd93d);
-        bar.drawRoundedRect(20, 55, 0, 5, 2);
-        bar.endFill();
-        container.addChild(bar);
-        
-        this.loadingBar = bar;
-        this.loadingBarTarget = 160;
-        this.generator.resultContainer.addChild(container);
-        this.generator.resultSprite = container;
+        // React muestra los mensajes. Aquí no dibujamos nada en Pixi.
+        return;
     }
 
     async animateSpin() {
         const startTime = Date.now();
         const baseDuration = this.spinConfig.spinTime;
-        
+
         return new Promise((resolve) => {
             const animate = () => {
                 const elapsed = Date.now() - startTime;
                 let allFinished = true;
-                
+
                 this.generator.slots.forEach((slot, index) => {
                     const slotDelay = this.spinConfig.spinDelay[index] || 0;
                     const totalSlotDuration = baseDuration;
-                    
+
                     if (!slot.spinning) return;
-                    
+
                     allFinished = false;
                     const slotElapsed = Math.max(0, elapsed - slotDelay);
                     const slotProgress = Math.min(1, slotElapsed / totalSlotDuration);
-                    
+
                     if (slotProgress <= 0) {
                         slot.spinSpeed = 0;
                     } else if (slotProgress < 0.15) {
@@ -126,11 +97,11 @@ export class CombinaSpin {
                         const easeOut = 1 - Math.pow(1 - t, 3);
                         slot.spinSpeed = this.spinConfig.maxSpeed * (1 - easeOut);
                     }
-                    
+
                     const maxPosition = slot.parts.length * this.spinConfig.spacing;
                     slot.position += Math.max(0.5, slot.spinSpeed);
                     slot.position %= maxPosition;
-                    
+
                     if (slotProgress > 0.88) {
                         const remaining = (slot.targetPosition - slot.position + maxPosition) % maxPosition;
                         if (remaining < slot.spinSpeed * 1.5 || slotElapsed >= totalSlotDuration) {
@@ -141,7 +112,7 @@ export class CombinaSpin {
                             this.createSparkleBurst(index);
                         }
                     }
-                    
+
                     if (this.generator.slotViews[index]) {
                         const intensity = slot.spinning ? Math.min(1, slot.spinSpeed / this.spinConfig.maxSpeed) : 0;
                         this.generator.slotViews[index].updateParts(
@@ -151,17 +122,9 @@ export class CombinaSpin {
                         );
                     }
                 });
-                
-                if (this.loadingBar && elapsed < baseDuration) {
-                    const progress = Math.min(1, elapsed / baseDuration);
-                    this.loadingBar.clear();
-                    this.loadingBar.beginFill(0xffd93d);
-                    this.loadingBar.drawRoundedRect(20, 55, progress * this.loadingBarTarget, 5, 2);
-                    this.loadingBar.endFill();
-                }
-                
+
                 this.updateSparkles();
-                
+
                 if (allFinished) {
                     this.generator.slots.forEach((slot, index) => {
                         if (this.generator.slotViews[index]) {
@@ -222,7 +185,12 @@ export class CombinaSpin {
             particle.y = this.generator.app.screen.height / 2 - 80;
             this.generator.app.stage.addChild(particle);
             this.winEffects.push({
-                sprite: particle, vx: (Math.random() - 0.5) * 10, vy: -Math.random() * 12 - 4, life: 0, maxLife: 90, gravity: 0.16
+                sprite: particle,
+                vx: (Math.random() - 0.5) * 10,
+                vy: -Math.random() * 12 - 4,
+                life: 0,
+                maxLife: 90,
+                gravity: 0.16
             });
         }
     }
@@ -237,10 +205,15 @@ export class CombinaSpin {
             let alive = false;
             this.winEffects.forEach(e => {
                 if (e.life > 0) {
-                    alive = true; e.life--;
-                    e.sprite.x += e.vx; e.sprite.y += e.vy; e.vy += e.gravity;
+                    alive = true;
+                    e.life--;
+                    e.sprite.x += e.vx;
+                    e.sprite.y += e.vy;
+                    e.vy += e.gravity;
                     e.sprite.alpha = e.life / e.maxLife;
-                } else { e.sprite.alpha = 0; }
+                } else {
+                    e.sprite.alpha = 0;
+                }
             });
             if (alive) requestAnimationFrame(animate);
         };
@@ -253,13 +226,17 @@ export class CombinaSpin {
         flash.drawRect(0, 0, this.generator.app.screen.width, this.generator.app.screen.height);
         flash.endFill();
         this.generator.app.stage.addChild(flash);
-        
+
         let alpha = 0.12;
         const fadeOut = () => {
             alpha -= 0.015;
             flash.alpha = alpha;
-            if (alpha > 0) { requestAnimationFrame(fadeOut); }
-            else { if (flash.parent) flash.parent.removeChild(flash); flash.destroy(); }
+            if (alpha > 0) {
+                requestAnimationFrame(fadeOut);
+            } else {
+                if (flash.parent) flash.parent.removeChild(flash);
+                flash.destroy();
+            }
         };
         setTimeout(fadeOut, 80);
     }
@@ -267,18 +244,23 @@ export class CombinaSpin {
     createStopGlow(index) {
         const slotView = this.generator.slotViews[index];
         if (!slotView) return;
-        
+
         const glow = new PIXI.Graphics();
         glow.beginFill(0xffd93d, 0.25);
         glow.drawRect(0, 0, slotView.width, slotView.height);
         glow.endFill();
         slotView.container.addChild(glow);
-        
+
         let alpha = 0.25;
         const fade = () => {
-            alpha -= 0.02; glow.alpha = alpha;
-            if (alpha > 0) requestAnimationFrame(fade);
-            else { if (glow.parent) glow.parent.removeChild(glow); glow.destroy(); }
+            alpha -= 0.02;
+            glow.alpha = alpha;
+            if (alpha > 0) {
+                requestAnimationFrame(fade);
+            } else {
+                if (glow.parent) glow.parent.removeChild(glow);
+                glow.destroy();
+            }
         };
         fade();
     }
@@ -288,22 +270,29 @@ export class CombinaSpin {
         if (!slotView) return;
         const cx = slotView.width / 2;
         const cy = slotView.height / 2;
-        
+
         for (let i = 0; i < 6; i++) {
             const spark = new PIXI.Graphics();
             spark.beginFill(0xffd93d, 0.8);
             spark.drawCircle(0, 0, 2);
             spark.endFill();
-            spark.x = cx; spark.y = cy;
+            spark.x = cx;
+            spark.y = cy;
             slotView.container.addChild(spark);
-            
+
             const angle = (i / 6) * Math.PI * 2;
             let life = 20;
             const animate = () => {
-                life--; spark.x += Math.cos(angle) * 3; spark.y += Math.sin(angle) * 3;
+                life--;
+                spark.x += Math.cos(angle) * 3;
+                spark.y += Math.sin(angle) * 3;
                 spark.alpha = life / 20;
-                if (life > 0) requestAnimationFrame(animate);
-                else { if (spark.parent) spark.parent.removeChild(spark); spark.destroy(); }
+                if (life > 0) {
+                    requestAnimationFrame(animate);
+                } else {
+                    if (spark.parent) spark.parent.removeChild(spark);
+                    spark.destroy();
+                }
             };
             animate();
         }
