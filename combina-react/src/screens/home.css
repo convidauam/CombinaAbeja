@@ -1,0 +1,126 @@
+.home-root {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.home-panel {
+  width: 100%;
+  max-width: 500px;
+  background: #2c3e50;
+  border-radius: 20px;
+  padding: 40px 30px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  color: #ffffff;
+}
+
+.home-title {
+  font-size: 28px;
+  color: #ffd93d;
+  font-weight: bold;
+  margin-bottom: 12px;
+  letter-spacing: 2px;
+}
+
+.home-subtitle {
+  font-size: 16px;
+  color: #cccccc;
+  margin-bottom: 30px;
+}
+
+.home-error {
+  background: #fed7d7;
+  color: #c53030;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #c53030;
+  font-size: 14px;
+  text-align: left;
+}
+
+.home-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.home-btn {
+  padding: 14px 24px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.2s;
+  font-family: inherit;
+}
+
+.home-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.home-btn-primary {
+  background: #ffd93d;
+  color: #1a1a2e;
+}
+
+.home-btn-primary:hover:not(:disabled) {
+  background: #ffed4a;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(255, 217, 61, 0.3);
+}
+
+.home-btn-secondary {
+  background: transparent;
+  color: #ffd93d;
+  border: 2px solid #ffd93d;
+}
+
+.home-btn-secondary:hover:not(:disabled) {
+  background: rgba(255, 217, 61, 0.1);
+  transform: translateY(-2px);
+}
+
+.home-btn-tertiary {
+  background: #2ed573;
+  color: #ffffff;
+  margin-top: 12px;
+}
+
+.home-btn-tertiary:hover:not(:disabled) {
+  background: #26b865;
+}
+
+.home-current {
+  background: #1a1a2e;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 24px;
+  border: 1px solid #4a5b6b;
+}
+
+.home-current p {
+  font-size: 12px;
+  color: #cccccc;
+  margin-bottom: 6px;
+}
+
+.home-current strong {
+  color: #ffd93d;
+  font-size: 16px;
+  display: block;
+}
+
+.home-help {
+  font-size: 11px;
+  color: #cccccc;
+  line-height: 1.5;
+  margin-top: 10px;
+}
