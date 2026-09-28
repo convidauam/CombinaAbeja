@@ -16,10 +16,7 @@
 
 5. Abre la URL que aparece en la terminal
 
-6. Abre el archivo `form-standalone.html` en tu navegador.
+6. Importa el .json o crea uno directamente
 
-7. Completa el formulario y exporta el archivo `.json`, o utiliza el archivo `combinabeja.json` incluido en el proyecto (comtiene la configuracion del combina abeja).
-
-8. Visualiza el itectivo y edita la posicion y tamaño del avatar de ser necesario
-   
-9. Exporta el paquete y abre el archivo `index.html` 
+7. Comienza el modo game y si es necesario edita posicion o tamaño del avatar
+8.  Exporta el paquete y abre el archivo `index.html` 
