@@ -18,5 +18,4 @@
 
 6. Importa el .json o crea uno directamente
 
-7. Comienza el modo game y si es necesario edita posicion o tamaño del avatar
-8.  Exporta el paquete y abre el archivo `index.html` 
+
